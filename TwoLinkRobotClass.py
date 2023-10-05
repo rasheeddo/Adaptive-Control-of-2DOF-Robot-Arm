@@ -1,3 +1,4 @@
+from msvcrt import getch
 import time
 from dynamixel_sdk import *                    # Uses Dynamixel SDK library
 import numpy
@@ -7,13 +8,13 @@ class TwoLinkRobot:
 
 	def __init__(self):
 		# Parameters
-		self.M1 = 0.25 # kg       link1 mass + servo2
-		self.M2 = 0.25   # kg       link2 mass + extra load
-		self.l1 = 0.192 # meter    length from joint1 to CG1
-		self.l2 = 0.185 # meter    length from joint2 to CG2
-		self.L1 = 0.27 # meter     length from joint1 to joint2
-		self.L2 = 0.23 # meter     length from joint2 to end effector
-		self.g = 9.81  # gravity
+		self.M1 = 0.153	  # kg       link1 mass + servo2
+		self.M2 = 0.245   # kg       link2 mass + extra load
+		self.l1 = 0.131   # meter    length from joint1 to CG1
+		self.l2 = 0.0789  # meter    length from joint2 to CG2
+		self.L1 = 0.192   # meter    length from joint1 to joint2
+		self.L2 = 0.156   # meter    length from joint2 to end effector
+		self.g = 9.81     # gravity
 		self.I1 = self.M1*self.l1**2  #Inertia of link1
 		self.I2 = self.M2*self.l2**2  #Inertia of link2
 		self.b1 = 0.1
@@ -315,6 +316,8 @@ class TwoLinkRobot:
 		if dxl_comm_result != COMM_SUCCESS:
 			print("%s" % self.packetHandler.getTxRxResult(dxl_comm_result))
 
+		print("COMM_SUCCESS",COMM_SUCCESS)
+
 		# Check if groupsyncread data of Dynamixel#1 is available
 		dxl_getdata_result = self.groupSyncReadPosition.isAvailable(self.DXL1_ID, self.ADDR_PRO_PRESENT_POSITION, self.LEN_PRO_PRESENT_POSITION)
 		if dxl_getdata_result != True:
@@ -387,6 +390,11 @@ class TwoLinkRobot:
 			print("%s" %self.packetHandler.getRxPacketError(dxl_error))
 		
 		com_signed_value = numpy.int16(dxl_present_current)
+		if str(ID) == "2":
+			self.current_unit = 3.36
+		elif str(ID) == "3":
+			self.current_unit= 2.69
+		
 		current = com_signed_value*2.69
 		#PresentCur = com_signed_value*(SetUnit/1000.0)
 		print("Present current" + str(ID) + " : [ComValue_signed]: " + str(com_signed_value))
